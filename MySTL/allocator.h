@@ -25,7 +25,6 @@ public:
     typedef const T& const_reference;
     typedef size_t size_type;
     typedef ptrdiff_t difference_type;
-
     // Type to represent another allocator for a different type
     template <class U>
     struct rebind {

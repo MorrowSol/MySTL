@@ -3,8 +3,6 @@ project(MySTL)
 # c++14标准
 set(CMAKE_CXX_STANDARD 14)
 set(HOME /data/bcy/MySTL/)
-# gtest使用单线程
-set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -Dgtest_disable_pthreads=ON -pthread")
 # 输出位置
 # set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 # set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

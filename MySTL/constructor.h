@@ -2,59 +2,58 @@
 #define _CONSTRUCTOR_H_
 
 // #include <new>
+#include <iostream>
 #include <type_traits>
+#include <typeinfo>
 
 #include "iterator.h"
 #include "util.h"
-#include <iostream>
-#include <typeinfo>
 
 namespace mySTL {
 
-static int call_construct_num=0;
-static int call_destruct_num=0;
-
 template <class T>
-void construct(T* ptr) {
+inline void __construct(T* ptr, std::true_type) {}
+template <class T>
+inline void __construct(T* ptr, std::false_type) {
     ::new ((void*)ptr) T();
-    call_construct_num++;
+}
+template <class T>
+inline void construct(T* ptr) {
+    __construct(ptr,
+                std::is_trivially_constructible<T>{});
 }
 template <class T, class V>
-void construct(T* ptr, const V& value) {
+inline void construct(T* ptr, const V& value) {
     ::new ((void*)ptr) T(value);
-    call_construct_num++;
 }
 template <class T, class... Args>
-void construct(T* ptr, Args&&... args) {
+inline void construct(T* ptr, Args&&... args) {
     ::new ((void*)ptr) T(mySTL::forward<Args>(args)...);
-    call_construct_num++;
 }
 
-
 template <class T>
-void destroy_one(T* pointer,std::true_type) {}
+inline void destroy_one(T* pointer, std::true_type) {}
 template <class T>
-void destroy_one(T* pointer,std::false_type) {
+inline void destroy_one(T* pointer, std::false_type) {
     if (pointer != nullptr) {
         pointer->~T();
-        call_destruct_num++;
     }
 }
 template <class T>
-void destroy(T* pointer) {
-    destroy_one(pointer,std::is_trivially_destructible<T>{});
+inline void destroy(T* pointer) {
+    destroy_one(pointer, std::is_trivially_destructible<T>{});
 }
 
 template <class ForwardIter>
-void destroy_cat(ForwardIter, ForwardIter, std::true_type) {}
+inline void destroy_cat(ForwardIter, ForwardIter, std::true_type) {}
 
 template <class ForwardIter>
-void destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
+inline void destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
     for (; first != last; ++first) destroy(&*first);
 }
 // 根据迭代器析构多个，通过类型萃取拿到类型，再判断类型
 template <class ForwardIter>
-void destroy(ForwardIter first, ForwardIter last) {
+inline void destroy(ForwardIter first, ForwardIter last) {
     destroy_cat(
         first, last,
         std::is_trivially_destructible<
