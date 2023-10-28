@@ -33,7 +33,7 @@ public:
     };
 
 public:
-    // static T* allocate();
+    static T* allocate();
     static T* allocate(size_type n);
 
     static void deallocate(T* ptr);
@@ -49,15 +49,15 @@ public:
     static void destroy(T* first, T* last);
 };
 
-// template <class T>
-// T* Allocator<T>::allocate() {
-//     T* tmp = static_cast<T*>(::operator new(sizeof(T)));
-//     if (tmp == 0) {
-//         std::cerr << "out of memory" << std::endl;
-//         exit(1);
-//     }
-//     return tmp;
-// }
+template <class T>
+T* Allocator<T>::allocate() {
+    T* tmp = static_cast<T*>(::operator new(sizeof(T)));
+    if (tmp == 0) {
+        // std::cerr << "out of memory" << std::endl;
+        exit(1);
+    }
+    return tmp;
+}
 
 template <class T>
 T* Allocator<T>::allocate(size_type n) {
