@@ -32,29 +32,29 @@ inline void construct(T* ptr, Args&&... args) {
 }
 
 template <class T>
-inline void destroy_one(T* pointer, std::true_type) {}
+inline void __destroy_one(T* pointer, std::true_type) {}
 template <class T>
-inline void destroy_one(T* pointer, std::false_type) {
+inline void __destroy_one(T* pointer, std::false_type) {
     if (pointer != nullptr) {
         pointer->~T();
     }
 }
 template <class T>
 inline void destroy(T* pointer) {
-    destroy_one(pointer, std::is_trivially_destructible<T>{});
+    __destroy_one(pointer, std::is_trivially_destructible<T>{});
 }
 
 template <class ForwardIter>
-inline void destroy_cat(ForwardIter, ForwardIter, std::true_type) {}
+inline void __destroy_cat(ForwardIter, ForwardIter, std::true_type) {}
 
 template <class ForwardIter>
-inline void destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
+inline void __destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
     for (; first != last; ++first) destroy(&*first);
 }
 // 根据迭代器析构多个，通过类型萃取拿到类型，再判断类型
 template <class ForwardIter>
 inline void destroy(ForwardIter first, ForwardIter last) {
-    destroy_cat(
+    __destroy_cat(
         first, last,
         std::is_trivially_destructible<
             typename mySTL::iterator_traits<ForwardIter>::value_type>{});
