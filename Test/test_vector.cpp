@@ -9,14 +9,14 @@ using namespace std;
 template <class T>
 void printvector1d(const char* message, mySTL::vector<T>& v) {
     cout << message;
-    int n=v.size();
+    int n = v.size();
     for (int i = 0; i < n; i++) {
         cout << v[i] << " ";
     }
     cout << endl;
 }
-
 #endif
+namespace testVector {
 
 class A {
 public:
@@ -42,7 +42,7 @@ public:
     }
 };
 
-TEST(test_vector_iterator, should_runok) {
+TEST(TestVector, Iterator) {
     // 迭代器判断
     mySTL::vector<int> v;
     // 初始容量
@@ -60,7 +60,7 @@ TEST(test_vector_iterator, should_runok) {
     EXPECT_EQ(v[0], 1);
 }
 
-TEST(test_vector_pod_init, should_runok) {
+TEST(TestVector, PodInit) {
     // 初始化判断，平凡类型
     mySTL::vector<int> v1;
     EXPECT_EQ(int(v1.size()), 0);
@@ -77,17 +77,16 @@ TEST(test_vector_pod_init, should_runok) {
     for (int i = 0; i < n; i++) EXPECT_EQ(v3[i], value);
 }
 
-TEST(test_vector_no_pod_init, should_runok) {
+TEST(TestVector, NoPodInit) {
     // 初始化判断，非平凡类型
-    int n=10;
+    int n = 2;
     mySTL::vector<A> v1;
     mySTL::vector<A> v2(n);
     A a;
-    mySTL::vector<A> v3(n,a);
-    
+    mySTL::vector<A> v3(n, a);
 }
 
-TEST(test_vector_erase_one, should_runok) {
+TEST(TestVector, EraseOne) {
     // 删除一个（头部，中部，尾部）
     int n = 10;
     mySTL::vector<int> v(n);
@@ -123,7 +122,7 @@ TEST(test_vector_erase_one, should_runok) {
 #endif
 }
 
-TEST(test_vector_erase_range, should_runok) {
+TEST(TestVector, EraseRange) {
     // 删除多个（头部，中部，尾部）
 
     int n = 20;
@@ -167,7 +166,7 @@ TEST(test_vector_erase_range, should_runok) {
 #endif
 }
 
-TEST(test_vector_pod_expansion, should_runok) {
+TEST(TestVector, PodVariableExpansion) {
     mySTL::vector<int> v;
     EXPECT_EQ(int(v.size()), 0);
     EXPECT_EQ(int(v.capacity()), 0);
@@ -189,9 +188,101 @@ TEST(test_vector_pod_expansion, should_runok) {
 #endif
 }
 
-TEST(test_vector_push_back, should_runok) {
-    // mySTL::vector<A> v;
-    // A a;
-    // v.push_back(a);
-    // v.push_back(A());
+TEST(TestVector, NoPodVariableExpansion) {
+    mySTL::vector<A> v;
+    A a;
+    v.push_back(a);
+    v.push_back(A());
+    v.push_back(1,2,3);
 }
+
+TEST(TestVector,InsertOne){
+    int n=10;
+    mySTL::vector<int> v(n);
+    for(int i=0;i<n;i++){
+        v[i]=i;
+    }
+#ifdef MYTESTLOG
+    printvector1d("初始化: ", v);
+#endif    
+    v.insert(v.begin(),111);
+    EXPECT_EQ(int(v.size()),n+1);
+    EXPECT_EQ(v[0], 111);
+#ifdef MYTESTLOG
+    printvector1d("插在头部 : ", v);
+#endif
+    v.insert(v.begin()+4,222);
+    EXPECT_EQ(v[4], 222);
+    EXPECT_EQ(int(v.size()),n+2);
+#ifdef MYTESTLOG
+    printvector1d("插在中部4: ", v);
+#endif
+    v.insert(v.end(),333);
+    EXPECT_EQ(v[v.size()-1], 333);
+    EXPECT_EQ(int(v.size()),n+3);
+#ifdef MYTESTLOG
+    printvector1d("插在尾部 : ", v);
+#endif 
+}
+
+TEST(TestVector,InsertN){
+    int n=10;
+    int N = 3;
+    mySTL::vector<int> v(n);
+    for(int i=0;i<n;i++){
+        v[i]=i;
+    }
+#ifdef MYTESTLOG
+    printvector1d("初始化: ", v);
+#endif    
+    v.insert(v.begin(),N,111);
+    EXPECT_EQ(int(v.size()),n+N);
+    EXPECT_EQ(v[0], 111);
+#ifdef MYTESTLOG
+    printvector1d("插在头部 : ", v);
+#endif
+    v.insert(v.begin()+4,N,222);
+    EXPECT_EQ(v[4], 222);
+    EXPECT_EQ(int(v.size()),n+N+N);
+#ifdef MYTESTLOG
+    printvector1d("插在中部4: ", v);
+#endif
+
+    v.insert(v.begin()+4,20,444);
+    EXPECT_EQ(v[4], 444);
+    EXPECT_EQ(int(v.size()),n+N+N+20);
+#ifdef MYTESTLOG
+    printvector1d("插在中部并扩容: ", v);
+#endif
+
+    v.insert(v.end(),N,333);
+    EXPECT_EQ(v[v.size()-1], 333);
+    EXPECT_EQ(int(v.size()),n+N+N+N+20);
+#ifdef MYTESTLOG
+    printvector1d("插在尾部 : ", v);
+#endif 
+}
+
+TEST(TestVector,Resize){
+    int n=10;
+    mySTL::vector<int> v(n);
+    for(int i=0;i<n;i++){
+        v[i]=i;
+    }
+#ifdef MYTESTLOG
+    printvector1d("初始化  : ", v);
+#endif
+    v.resize(5);
+    EXPECT_EQ(int(v.size()), 5);
+#ifdef MYTESTLOG
+    printvector1d("resize 5: ", v);
+#endif
+    v.resize(100);
+    EXPECT_EQ(int(v.size()), 100);
+#ifdef MYTESTLOG
+    printvector1d("resize 15: ", v);
+#endif
+}
+
+
+}  // namespace testVector

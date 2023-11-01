@@ -20,16 +20,10 @@ protected:
     iterator finish;
     iterator end_of_storage;
 
-    void insert_aux(iterator position, const T& x);
-
-    iterator allocate_and_fill(size_type n, const T& x) {
-        iterator result = data_allocator::allocate(n);
+    void fill_initialize(size_type n, const T& value) {
+        start = data_allocator::allocate(n);
         // 这里先调stl的
         std::uninitialized_fill_n(result, n, x);
-        return result;
-    }
-    void fill_initialize(size_type n, const T& value) {
-        start = allocate_and_fill(n, value);
         finish = start + n;
         end_of_storage = finish;
     }
@@ -40,11 +34,13 @@ protected:
         finish = new_finish;
         end_of_storage = new_end_of_storage;
     }
-    void expansion(iterator first, iterator last) {
+    void expansion() { expansion(finish, finish, 0); }
+    void expansion(iterator first, iterator last, size_type n) {
         // 分配新空间
         size_type old_size = size();
         // 新空间容量
         size_type new_size = old_size != 0 ? 2 * old_size : 1;
+        new_size = std::max(new_size, old_size + n);
         // 分配新空间
         iterator new_start = data_allocator::allocate(new_size);
         iterator new_finish = nullptr;
@@ -66,7 +62,6 @@ protected:
                   << std::endl;
 #endif
     }
-    void expansion() { expansion(finish, finish); }
 
 public:
     vector() : start(nullptr), finish(nullptr), end_of_storage(nullptr) {}
@@ -95,40 +90,26 @@ public:
 
 public:
     // 删除区间内的对象，后面的前移
+    iterator erase(iterator position) { return erase(position, position + 1); }
     iterator erase(iterator first, iterator last) {
         iterator newfinish = std::copy(last, finish, first);
         destroy(newfinish, finish);
         finish = newfinish;
         return first;
     }
-    iterator erase(iterator position) { return erase(position, position + 1); }
     void clear() { erase(begin(), end()); }
-    void push_back(const T& x) {
+    // push_back
+    template <typename... Args>
+    void push_back(Args&&... args) {
         // 有空间
         if (finish != end_of_storage) {
-            mySTL::construct(finish, x);
+            mySTL::construct(finish, mySTL::forward<Args>(args)...);
             ++finish;
         }
-        // 没空间
+        // 没空间 // 扩容 // 再次push
         else {
-            // 扩容
             expansion();
-            // 再次push
-            this->push_back(x);
-        }
-    }
-    void push_back(T&& x) {
-        // 有空间
-        if (finish != end_of_storage) {
-            mySTL::construct(finish, mySTL::move(x));
-            ++finish;
-        }
-        // 没空间
-        else {
-            // 扩容
-            expansion();
-            // 再次push
-            this->push_back(mySTL::move(x));
+            this->push_back(mySTL::forward<Args>(args)...);
         }
     }
 
@@ -137,18 +118,30 @@ public:
         --finish;
         mySTL::destroy(finish);
     }
-
-    iterator insert(iterator positon, const T& x) {
-        if (finish != end_of_storage) {
+    void insert(iterator positon, const T& x) { insert(positon, 1, x); }
+    void insert(iterator positon, size_type n, const T& x) {
+        difference_type cur_diff = positon - start;
+        if (finish + n <= end_of_storage) {
+            // 有空间 拷贝后
+            std::copy(positon, finish, positon + n);
+            // 构造
+            std::uninitialized_fill_n(positon, n, x);
+            finish += n;
+        } else {
+            expansion(end(), end(), n);
+            this->insert(start + cur_diff, n, x);
         }
     }
-    void resize(size_type new_size) {
+    void resize(size_type new_size) { resize(new_size, T()); }
+    void resize(size_type new_size, const T& x) {
         // 分为比size小  比size大但比capacity小   比capacity大
         if (new_size < size()) {
             erase(start + new_size, finish);
-        } else if (new_size < capacity()) {
+        } else {
+            insert(finish, new_size - size(), x);
         }
     }
+
 };
 
 }  // namespace mySTL

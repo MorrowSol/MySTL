@@ -18,7 +18,7 @@ public:
 };
 int A1::call_constructor_num = 0;
 int A1::call_destructor_num = 0;
-TEST(TestNoTriviallyConstructor, should_10_when_given_10) {
+TEST(TestConstructor, NoPodVariable) {
     int n = 10;
     // 测试类的构造析构
     mySTL::Allocator<A1> alloc;
@@ -45,7 +45,7 @@ TEST(TestNoTriviallyConstructor, should_10_when_given_10) {
     EXPECT_EQ(A1::call_destructor_num, n);
     alloc.deallocate(ptr);
 }
-TEST(TestTriviallyConstructor, should_0_when_given_10) {
+TEST(TestConstructor, PodVariable) {
     int n = 10;
     // 测试平凡类型
     mySTL::Allocator<int> intalloc;
