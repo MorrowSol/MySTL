@@ -3,7 +3,9 @@ project(gtest)
 # 输出位置
 set(EXECUTABLE_OUTPUT_PATH ${HOME}/bin)
 # 指定文件
-aux_source_directory(${PROJECT_SOURCE_DIR} SRC_LIST)
+aux_source_directory(${HOME}/Test SRC_LIST)
+# aux_source_directory(${PROJECT_SOURCE_DIR}/OtherTest SRC_Test)
+# list(APPEND SRC_LIST ${SRC_LIST} ${SRC_Test})
 message(${SRC_LIST})
 # 头文件路径
 include_directories(${HOME}/MySTL)

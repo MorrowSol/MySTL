@@ -11,14 +11,13 @@ struct forward_iterator_tag : public input_iterator_tag {};
 struct bidirection_iterator_tag : public forward_iterator_tag {};
 struct random_access_iterator_tag : public bidirection_iterator_tag {};
 
-template <class Category, class T, class Distance = ptrdiff_t,
-          class Pointer = T*, class Reference = T&>
+template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
 struct iterator {
-    typedef Category iterator_category;
-    typedef T value_type;
-    typedef Distance difference_type;
-    typedef Pointer pointer;
-    typedef Reference reference;
+    typedef Category        iterator_category;
+    typedef T               value_type;
+    typedef Distance        difference_type;
+    typedef Pointer         pointer;
+    typedef Reference       reference;
 };
 
 // 类型萃取
@@ -88,7 +87,7 @@ inline typename iterator_traits<Iterator>::difference_type __distance(
 template <class Iterator>
 inline typename iterator_traits<Iterator>::difference_type distance(
     Iterator first, Iterator last) {
-    __distance(first, last, iterator_category(first));
+    return __distance(first, last, iterator_category(first));
 }
 
 // advance

@@ -7,23 +7,24 @@ namespace mySTL {
 template <class T, class Alloc = mySTL::Allocator<T> >
 class vector {
 public:
-    typedef T value_type;
-    typedef T* pointer;
+    typedef Alloc allocator;
+    typedef typename allocator::value_type value_type;
+    typedef typename allocator::pointer pointer;
+    typedef typename allocator::reference reference;
+    typedef typename allocator::size_type size_type;
+    typedef typename allocator::difference_type difference_type;
     typedef T* iterator;
-    typedef T& reference;
-    typedef size_t size_type;
-    typedef ptrdiff_t difference_type;
 
 protected:
-    typedef Alloc data_allocator;
+    
     iterator start;
     iterator finish;
     iterator end_of_storage;
 
     void fill_initialize(size_type n, const T& value) {
-        start = data_allocator::allocate(n);
+        start = allocator::allocate(n);
         // 这里先调stl的
-        std::uninitialized_fill_n(result, n, x);
+        std::uninitialized_fill_n(start, n, value);
         finish = start + n;
         end_of_storage = finish;
     }
@@ -42,7 +43,7 @@ protected:
         size_type new_size = old_size != 0 ? 2 * old_size : 1;
         new_size = std::max(new_size, old_size + n);
         // 分配新空间
-        iterator new_start = data_allocator::allocate(new_size);
+        iterator new_start = allocator::allocate(new_size);
         iterator new_finish = nullptr;
         iterator next_construct;
         // 转移数据,这里要满足，要么全成功，要么全失败的要求
@@ -75,7 +76,7 @@ public:
     ~vector() {
         mySTL::destroy(start, finish);
         if (start != nullptr) {
-            data_allocator::deallocate(start);
+            allocator::deallocate(start);
         }
     }
 
