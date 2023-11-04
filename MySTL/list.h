@@ -58,13 +58,15 @@ struct __list_iterator : public iterator<bidirection_iterator_tag, T> {
         --*this;
         return tmp;
     }
-    self& operator+(int n) {
-        mySTL::advance<self>(*this, n, iterator_category{});
-        return *this;
+    self operator+(int n) {
+        self tmp = *this;
+        mySTL::advance<self>(tmp, n, iterator_category{});
+        return tmp;
     }
-    self& operator-(int n) {
-        mySTL::advance<self>(*this, -n, iterator_category{});
-        return *this;
+    self operator-(int n) {
+        self tmp = *this;
+        mySTL::advance<self>(tmp, -n, iterator_category{});
+        return tmp;
     }
     // 迭代器 因为只有一个变量，用默认的就行
 };
@@ -104,7 +106,10 @@ public:
         node->next = node;
         node->prev = node;
     };
-    ~list() {}
+    ~list() {
+        clear();
+        node_allocator::deallocate(node);
+    }
 
     iterator begin() { return static_cast<iterator>(node->next); }
     iterator end() { return static_cast<iterator>(node); }
@@ -154,29 +159,96 @@ public:
             if (*tmp == value) erase(tmp);
         }
     }
+
 protected:
-    void transfer(iterator position,iterator first,iterator last){
-        if(position==last)
-            return;
+    void transfer(iterator position, iterator first, iterator last) {
+        if (position == last) return;
         link_type prev_node = position.node->prev;
         link_type new_last = last.node->prev;
         // 接上原来的
         first.node->prev->next = last.node;
         last.node->prev = first.node->prev;
-        
+
         new_last->next = position.node;
         position.node->prev = new_last;
         prev_node->next = first.node;
         first.node->prev = prev_node;
     }
+
 public:
-    void splice(iterator position,list& x){
-        if(x.empty()){
-            transfer(position,x.begin(),x.end());
+    void splice(iterator position, list& x) {
+        if (!x.empty())
+            transfer(position, x.begin(), x.end());
+    }
+    void splice(iterator position, iterator i) {
+        if (position == i || position == i + 1) return;
+        transfer(position, i, i + 1);
+    }
+    void splice(iterator position, iterator first, iterator last) {
+        if (first != last) transfer(position, first, last);
+    }
+    void swap(list & other){
+        link_type tmp = other.node;
+        other.node = node;
+        node = tmp;
+    }
+    void reverse(){}
+    // 将两个递增序链表合并，按递增序排列
+    void merge(list &x){
+        iterator first1 = begin();
+        iterator last1 = end();
+        iterator first2 = x.begin();
+        iterator last2 = x.end();
+
+        while(first1!= last1 && first2 !=last2){
+            if(*first2< *first1){
+                iterator next = first2;
+                transfer(first1,first2,++next);
+                first2 = next;
+            }
+            else
+                ++first1;
+        }
+        if(first2!=last2)transfer(last1,first2,last2);
+    }
+    // 归并排序
+    void sort(){
+        if(node->next==node || node->next->next == node)
+            return;
+        list carry;
+        list counter[64];
+        int fill=0;
+        while(!empty()){
+            carry.splice(carry.begin(),begin());
+            int i=0;
+            while (i<fill&& !counter[i].empty())
+            {
+                counter[i].merge(carry);
+                carry.swap(counter[i++]);
+            }
+            carry.swap(counter[i]);
+            if(i==fill)++fill;
+            
+        }
+        for(int i=1;i<fill;i++)
+            counter[i].merge(counter[i-1]);
+        swap(counter[fill-1]);
+
+    }
+    // 将递增序链表去重
+    void unique(){
+        iterator first =begin();
+        iterator last =end();
+        if(first==last)return;
+        while(first!=last){
+            iterator next = first.node->next;
+            if(*first==*next)
+                erase(next);
+            else
+                ++first;
         }
     }
     
-
 };
 
 }  // namespace mySTL

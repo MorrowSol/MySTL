@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 #include "list.h"
-// #include <list>
+#include <list>
 using namespace std;
 
 
@@ -156,7 +156,7 @@ TEST(TestList, Transfer) {
     printlist("list1 : ",mylist);
     printlist("list12: ",mylist2);
 #endif 
-    mylist.transfer(mylist.begin()+2,mylist2.begin()+1,mylist2.begin()+4);
+    mylist.splice(mylist.begin()+2,mylist2.begin()+1,mylist2.begin()+4);
 #ifdef MYTESTLOG
     cout<<"transfer后"<<endl;
     printlist("list1 : ",mylist);
@@ -168,10 +168,108 @@ TEST(TestList, Transfer) {
     EXPECT_EQ(*(mylist2.begin()+1), 10);
 }
 
+TEST(TestList, Splice) {
+    // 默认构造
+    mySTL::list<int> mylist;
+    mylist.push_back(1);
+    mylist.push_back(2);
+    mylist.push_back(3);
+    mylist.push_back(4);
+    mylist.push_back(5);
+    mySTL::list<int> mylist2;
+    mylist2.push_back(6);
+    mylist2.push_back(7);
+    mylist2.push_back(8);
+    mylist2.push_back(9);
+    mylist2.push_back(10);
+#ifdef MYTESTLOG
+    printlist("list1 : ",mylist);
+    printlist("list12: ",mylist2);
+#endif 
+    mylist.splice(mylist.begin(),mylist.begin()+3);
+    EXPECT_EQ(*(mylist.begin()), 4);
+    mylist.splice(mylist.begin(),mylist2.begin()+3);
+    EXPECT_EQ(*(mylist.begin()), 9);
+#ifdef MYTESTLOG
+    cout<<"自身插入+外部插入"<<endl;
+    printlist("list1 : ",mylist);
+    printlist("list12: ",mylist2);
+#endif 
+    mylist.splice(mylist.begin()+2,mylist2);
+    EXPECT_EQ(*(mylist.begin()+2), 6);
+    EXPECT_EQ(int(mylist.size()), 10);
+    EXPECT_EQ(int(mylist2.size()), 0);
+#ifdef MYTESTLOG
+    cout<<"合并两链表(从2位置)"<<endl;
+    printlist("list1 : ",mylist);
+    printlist("list12: ",mylist2);
+#endif 
 
+}
 
+TEST(TestList, Merge) {
+    // 默认构造
+    mySTL::list<int> mylist;
+    mylist.push_back(1);
+    mylist.push_back(3);
+    mylist.push_back(5);
+    mylist.push_back(7);
+    mylist.push_back(9);
+    mylist.push_back(11);
+    mySTL::list<int> mylist2;
+    mylist2.push_back(2);
+    mylist2.push_back(4);
+    mylist2.push_back(5);
+    mylist2.push_back(7);
+    mylist2.push_back(10);
+#ifdef MYTESTLOG
+    cout<<"合并两链表"<<endl;
+    printlist("list1 : ",mylist);
+    printlist("list12: ",mylist2);
+#endif 
+    mylist.merge(mylist2);
+    EXPECT_EQ(int(mylist.size()), 11);
+    EXPECT_EQ(int(mylist2.size()), 0);
+#ifdef MYTESTLOG
+    cout<<"合并后"<<endl;
+    printlist("list1 : ",mylist);
+    printlist("list12: ",mylist2);
+#endif  
+}
 
-    
+TEST(TestList, Sort) {
+    // 默认构造
+    mySTL::list<int> mylist;
+    mylist.push_back(1);
+    mylist.push_back(5);
+    mylist.push_back(9);
+    mylist.push_back(3);
+    mylist.push_back(7);
+    mylist.push_back(7);
+    mylist.push_back(7);
+    mylist.push_back(7);
+    mylist.push_back(9);
+#ifdef MYTESTLOG
+    printlist("排序前: ",mylist);
+#endif  
+    mylist.sort();
+    EXPECT_EQ(*(mylist.begin()), 1);
+    EXPECT_EQ(*(mylist.begin()+1), 3);
+    EXPECT_EQ(*(mylist.begin()+2), 5);
+    EXPECT_EQ(*(mylist.begin()+3), 7);
+    EXPECT_EQ(*(mylist.begin()+4), 7);
+    EXPECT_EQ(*(mylist.begin()+5), 7);
+    EXPECT_EQ(*(mylist.begin()+6), 7);
+    EXPECT_EQ(*(mylist.begin()+7), 9);
+#ifdef MYTESTLOG
+    printlist("排序后: ",mylist);
+#endif
+    mylist.unique();
+    EXPECT_EQ(int(mylist.size()), 5);
+#ifdef MYTESTLOG
+    printlist("去重后: ",mylist);
+#endif   
+}
     
 
 

@@ -280,7 +280,7 @@ TEST(TestVector,Resize){
     v.resize(100);
     EXPECT_EQ(int(v.size()), 100);
 #ifdef MYTESTLOG
-    printvector1d("resize 15: ", v);
+    printvector1d("resize 100: ", v);
 #endif
 }
 
