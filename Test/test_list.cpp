@@ -1,10 +1,9 @@
 #include <iostream>
+#include <list>
 
 #include "gtest/gtest.h"
 #include "list.h"
-#include <list>
 using namespace std;
-
 
 namespace testList {
 
@@ -12,26 +11,26 @@ namespace testList {
 template <class T>
 void printlist(const char* message, mySTL::list<T>& list) {
     cout << message;
-    for(auto it = list.begin();it!=list.end();++it){
-        cout<<*it<<" ";
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        cout << *it << " ";
     }
     cout << endl;
 }
 #endif
 
-class A{
+class A {
 public:
     int a;
-    A(){}
-    A(int a):a(a){}
-    A& operator=(const A& x){
-        a= x.a;
+    A() {}
+    A(int a) : a(a) {}
+    A& operator=(const A& x) {
+        a = x.a;
         return *this;
     }
-    friend ostream & operator<<(ostream & out, A & x);
+    friend ostream& operator<<(ostream& out, A& x);
 };
-//重载输出运算符
-ostream & operator<<(ostream & out, A & x){
+// 重载输出运算符
+ostream& operator<<(ostream& out, A& x) {
     out << x.a;
     return out;
 }
@@ -48,8 +47,8 @@ TEST(TestListIterator, OperatorOverload) {
     mySTL::__list_iterator<A> it1(&node1);
     mySTL::__list_iterator<A> it2(&node1);
     mySTL::__list_iterator<A> it3(&node2);
-    EXPECT_EQ(it1==it2, true);
-    EXPECT_EQ(it1!=it3, true);
+    EXPECT_EQ(it1 == it2, true);
+    EXPECT_EQ(it1 != it3, true);
     EXPECT_EQ((*it1).a, 123);
     EXPECT_EQ(it1->a, 123);
 }
@@ -69,8 +68,8 @@ TEST(TestList, ConstructAndIterator) {
     EXPECT_EQ(*(--mylist.end()), 4);
     EXPECT_EQ(mylist.front(), 1);
     EXPECT_EQ(mylist.back(), 4);
-#ifdef MYTESTLOG 
-    printlist("平凡类型初始化: ",mylist);
+#ifdef MYTESTLOG
+    printlist("平凡类型初始化: ", mylist);
 #endif
 
     // 类 类型
@@ -88,8 +87,8 @@ TEST(TestList, ConstructAndIterator) {
     EXPECT_EQ((*(--mylist2.end())).a, 4);
     EXPECT_EQ(mylist2.front().a, 1);
     EXPECT_EQ(mylist2.back().a, 4);
-#ifdef MYTESTLOG 
-    printlist("类类型初始化: ",mylist2);
+#ifdef MYTESTLOG
+    printlist("类类型初始化: ", mylist2);
 #endif
 }
 
@@ -103,39 +102,38 @@ TEST(TestList, PushAndErase) {
     mylist.push_back(5);
     EXPECT_EQ(int(mylist.size()), 5);
 #ifdef MYTESTLOG
-    printlist("初始化: ",mylist);
+    printlist("初始化: ", mylist);
 #endif
     mylist.push_front(0);
     mylist.push_front(-1);
     EXPECT_EQ(int(mylist.size()), 7);
     EXPECT_EQ(mylist.front(), -1);
 #ifdef MYTESTLOG
-    printlist("push_front: ",mylist);
+    printlist("push_front: ", mylist);
 #endif
     mylist.pop_back();
     mylist.pop_front();
     EXPECT_EQ(int(mylist.size()), 5);
     EXPECT_EQ(mylist.back(), 4);
 #ifdef MYTESTLOG
-    printlist("pop_front_back: ",mylist);
-#endif    
-    mylist.insert(mylist.begin()+4,2);
-    EXPECT_EQ(*(mylist.begin()+4), 2);
-#ifdef MYTESTLOG
-    printlist("insert pos 4: ",mylist);
+    printlist("pop_front_back: ", mylist);
 #endif
-    mylist.erase(mylist.begin()+1);
-    EXPECT_EQ(*(mylist.begin()+1), 2);
+    mylist.insert(mylist.begin() + 4, 2);
+    EXPECT_EQ(*(mylist.begin() + 4), 2);
 #ifdef MYTESTLOG
-    printlist("erase pos 1: ",mylist);
+    printlist("insert pos 4: ", mylist);
+#endif
+    mylist.erase(mylist.begin() + 1);
+    EXPECT_EQ(*(mylist.begin() + 1), 2);
+#ifdef MYTESTLOG
+    printlist("erase pos 1: ", mylist);
 #endif
     mylist.remove(2);
 #ifdef MYTESTLOG
-    printlist("remove 2: ",mylist);
-#endif    
+    printlist("remove 2: ", mylist);
+#endif
     mylist.clear();
     EXPECT_EQ(int(mylist.size()), 0);
-
 }
 
 TEST(TestList, Transfer) {
@@ -153,19 +151,19 @@ TEST(TestList, Transfer) {
     mylist2.push_back(9);
     mylist2.push_back(10);
 #ifdef MYTESTLOG
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif 
-    mylist.splice(mylist.begin()+2,mylist2.begin()+1,mylist2.begin()+4);
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
+    mylist.splice(mylist.begin() + 2, mylist2.begin() + 1, mylist2.begin() + 4);
 #ifdef MYTESTLOG
-    cout<<"transfer后"<<endl;
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif     
+    cout << "transfer后" << endl;
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
     EXPECT_EQ(int(mylist.size()), 8);
     EXPECT_EQ(int(mylist2.size()), 2);
-    EXPECT_EQ(*(mylist.begin()+2), 7);
-    EXPECT_EQ(*(mylist2.begin()+1), 10);
+    EXPECT_EQ(*(mylist.begin() + 2), 7);
+    EXPECT_EQ(*(mylist2.begin() + 1), 10);
 }
 
 TEST(TestList, Splice) {
@@ -183,28 +181,27 @@ TEST(TestList, Splice) {
     mylist2.push_back(9);
     mylist2.push_back(10);
 #ifdef MYTESTLOG
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif 
-    mylist.splice(mylist.begin(),mylist.begin()+3);
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
+    mylist.splice(mylist.begin(), mylist.begin() + 3);
     EXPECT_EQ(*(mylist.begin()), 4);
-    mylist.splice(mylist.begin(),mylist2.begin()+3);
+    mylist.splice(mylist.begin(), mylist2.begin() + 3);
     EXPECT_EQ(*(mylist.begin()), 9);
 #ifdef MYTESTLOG
-    cout<<"自身插入+外部插入"<<endl;
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif 
-    mylist.splice(mylist.begin()+2,mylist2);
-    EXPECT_EQ(*(mylist.begin()+2), 6);
+    cout << "自身插入+外部插入" << endl;
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
+    mylist.splice(mylist.begin() + 2, mylist2);
+    EXPECT_EQ(*(mylist.begin() + 2), 6);
     EXPECT_EQ(int(mylist.size()), 10);
     EXPECT_EQ(int(mylist2.size()), 0);
 #ifdef MYTESTLOG
-    cout<<"合并两链表(从2位置)"<<endl;
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif 
-
+    cout << "合并两链表(从2位置)" << endl;
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
 }
 
 TEST(TestList, Merge) {
@@ -223,18 +220,18 @@ TEST(TestList, Merge) {
     mylist2.push_back(7);
     mylist2.push_back(10);
 #ifdef MYTESTLOG
-    cout<<"合并两链表"<<endl;
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif 
+    cout << "合并两链表" << endl;
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
     mylist.merge(mylist2);
     EXPECT_EQ(int(mylist.size()), 11);
     EXPECT_EQ(int(mylist2.size()), 0);
 #ifdef MYTESTLOG
-    cout<<"合并后"<<endl;
-    printlist("list1 : ",mylist);
-    printlist("list12: ",mylist2);
-#endif  
+    cout << "合并后" << endl;
+    printlist("list1 : ", mylist);
+    printlist("list12: ", mylist2);
+#endif
 }
 
 TEST(TestList, Sort) {
@@ -250,27 +247,29 @@ TEST(TestList, Sort) {
     mylist.push_back(7);
     mylist.push_back(9);
 #ifdef MYTESTLOG
-    printlist("排序前: ",mylist);
-#endif  
+    printlist("排序前: ", mylist);
+#endif
     mylist.sort();
     EXPECT_EQ(*(mylist.begin()), 1);
-    EXPECT_EQ(*(mylist.begin()+1), 3);
-    EXPECT_EQ(*(mylist.begin()+2), 5);
-    EXPECT_EQ(*(mylist.begin()+3), 7);
-    EXPECT_EQ(*(mylist.begin()+4), 7);
-    EXPECT_EQ(*(mylist.begin()+5), 7);
-    EXPECT_EQ(*(mylist.begin()+6), 7);
-    EXPECT_EQ(*(mylist.begin()+7), 9);
+    EXPECT_EQ(*(mylist.begin() + 1), 3);
+    EXPECT_EQ(*(mylist.begin() + 2), 5);
+    EXPECT_EQ(*(mylist.begin() + 3), 7);
+    EXPECT_EQ(*(mylist.begin() + 4), 7);
+    EXPECT_EQ(*(mylist.begin() + 5), 7);
+    EXPECT_EQ(*(mylist.begin() + 6), 7);
+    EXPECT_EQ(*(mylist.begin() + 7), 9);
 #ifdef MYTESTLOG
-    printlist("排序后: ",mylist);
+    printlist("排序后: ", mylist);
 #endif
     mylist.unique();
     EXPECT_EQ(int(mylist.size()), 5);
 #ifdef MYTESTLOG
-    printlist("去重后: ",mylist);
-#endif   
+    printlist("去重后: ", mylist);
+#endif
+    mylist.reverse();
+#ifdef MYTESTLOG
+    printlist("翻转后: ", mylist);
+#endif
 }
-    
-
 
 }  // namespace testList

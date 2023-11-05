@@ -31,6 +31,7 @@ protected:
     void __destroy_and_update(iterator new_start, iterator new_finish,
                               iterator new_end_of_storage) {
         mySTL::destroy(start, finish);
+        allocator::deallocate(start);
         start = new_start;
         finish = new_finish;
         end_of_storage = new_end_of_storage;

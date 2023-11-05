@@ -177,8 +177,7 @@ protected:
 
 public:
     void splice(iterator position, list& x) {
-        if (!x.empty())
-            transfer(position, x.begin(), x.end());
+        if (!x.empty()) transfer(position, x.begin(), x.end());
     }
     void splice(iterator position, iterator i) {
         if (position == i || position == i + 1) return;
@@ -187,68 +186,71 @@ public:
     void splice(iterator position, iterator first, iterator last) {
         if (first != last) transfer(position, first, last);
     }
-    void swap(list & other){
+    void swap(list& other) {
         link_type tmp = other.node;
         other.node = node;
         node = tmp;
     }
-    void reverse(){}
+    void reverse() {
+        if (node->next == node || node->next->next == node) return;
+        iterator first = begin() + 1;
+        while (first != end()) {
+            // 注意这里cur位置移动后，它的next就不再是原来的next了
+            // 所以需要提前拿到next，再移动cur位置
+            // merge里同理
+            ++first;
+            transfer(begin(), first - 1, first);
+        }
+    }
     // 将两个递增序链表合并，按递增序排列
-    void merge(list &x){
+    void merge(list& x) {
         iterator first1 = begin();
         iterator last1 = end();
         iterator first2 = x.begin();
         iterator last2 = x.end();
 
-        while(first1!= last1 && first2 !=last2){
-            if(*first2< *first1){
-                iterator next = first2;
-                transfer(first1,first2,++next);
-                first2 = next;
-            }
-            else
+        while (first1 != last1 && first2 != last2) {
+            if (*first2 < *first1) {
+                ++first2;
+                transfer(first1, first2 - 1, first2);
+            } else
                 ++first1;
         }
-        if(first2!=last2)transfer(last1,first2,last2);
+        if (first2 != last2) transfer(last1, first2, last2);
     }
     // 归并排序
-    void sort(){
-        if(node->next==node || node->next->next == node)
-            return;
+    void sort() {
+        if (node->next == node || node->next->next == node) return;
         list carry;
         list counter[64];
-        int fill=0;
-        while(!empty()){
-            carry.splice(carry.begin(),begin());
-            int i=0;
-            while (i<fill&& !counter[i].empty())
-            {
+        int fill = 0;
+        while (!empty()) {
+            carry.splice(carry.begin(), begin());
+            int i = 0;
+            while (i < fill && !counter[i].empty()) {
                 counter[i].merge(carry);
                 carry.swap(counter[i++]);
             }
             carry.swap(counter[i]);
-            if(i==fill)++fill;
-            
+            if (i == fill) ++fill;
         }
-        for(int i=1;i<fill;i++)
-            counter[i].merge(counter[i-1]);
-        swap(counter[fill-1]);
-
+        for (int i = 1; i < fill; i++) counter[i].merge(counter[i - 1]);
+        swap(counter[fill - 1]);
     }
     // 将递增序链表去重
-    void unique(){
-        iterator first =begin();
-        iterator last =end();
-        if(first==last)return;
-        while(first!=last){
-            iterator next = first.node->next;
-            if(*first==*next)
+    void unique() {
+        iterator first = begin();
+        iterator last = end();
+        if (first == last) return;
+        iterator next = first + 1;
+        while (next != last) {
+            if (*first == *next)
                 erase(next);
             else
                 ++first;
+            next = first + 1;
         }
     }
-    
 };
 
 }  // namespace mySTL
