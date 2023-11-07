@@ -1,9 +1,6 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
-// size_t ptrdiff_t
-#include <cstddef>
-
 namespace mySTL{
 
 /// remove_reference
@@ -38,6 +35,14 @@ typename mySTL::remove_reference<T>::type&& move(T&& arg){
     return static_cast<typename mySTL::remove_reference<T>::type&&>(arg);
 }
 
+template <class T>
+T max(const T& a, const T& b){
+    return a>b?a:b;
+}
+template <class T>
+T min(const T& a, const T& b){
+    return a<b?a:b;
+}
 
 }
 #endif

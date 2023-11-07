@@ -11,13 +11,14 @@ struct forward_iterator_tag : public input_iterator_tag {};
 struct bidirection_iterator_tag : public forward_iterator_tag {};
 struct random_access_iterator_tag : public bidirection_iterator_tag {};
 
-template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
+template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&,class Size_type = size_t>
 struct iterator {
     typedef Category        iterator_category;
     typedef T               value_type;
-    typedef Distance        difference_type;
     typedef Pointer         pointer;
     typedef Reference       reference;
+    typedef Size_type       size_type;
+    typedef Distance        difference_type;
 };
 
 // 类型萃取

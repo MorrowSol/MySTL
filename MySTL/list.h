@@ -1,5 +1,6 @@
 #ifndef _LIST_H_
 #define _LIST_H_
+
 #include "allocator.h"
 #include "iterator.h"
 
@@ -22,9 +23,10 @@ struct __list_iterator : public iterator<bidirection_iterator_tag, T> {
     typedef iterator<bidirection_iterator_tag, T> iterator_base;
     typedef typename iterator_base::iterator_category iterator_category;
     typedef typename iterator_base::value_type value_type;
-    typedef typename iterator_base::difference_type difference_type;
     typedef typename iterator_base::pointer pointer;
     typedef typename iterator_base::reference reference;
+    typedef typename iterator_base::size_type size_type;
+    typedef typename iterator_base::difference_type difference_type;
 
     typedef __list_node<T>* link_type;
     typedef __list_iterator<T> self;
@@ -58,15 +60,20 @@ struct __list_iterator : public iterator<bidirection_iterator_tag, T> {
         --*this;
         return tmp;
     }
-    self operator+(int n) {
-        self tmp = *this;
-        mySTL::advance<self>(tmp, n, iterator_category{});
-        return tmp;
+    self& operator+=(difference_type n){
+        mySTL::advance<self>(*this, n, iterator_category{});
+        return *this;
     }
-    self operator-(int n) {
+    self& operator-=(difference_type n){
+        return *this+=-n;
+    }
+    self operator+(difference_type n) {
         self tmp = *this;
-        mySTL::advance<self>(tmp, -n, iterator_category{});
-        return tmp;
+        return tmp+=n;
+    }
+    self operator-(difference_type n) {
+        self tmp = *this;
+        return tmp-=n;
     }
     // 迭代器 因为只有一个变量，用默认的就行
 };

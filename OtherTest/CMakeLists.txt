@@ -5,7 +5,8 @@ set(EXECUTABLE_OUTPUT_PATH ${HOME}/bin)
 # aux_source_directory(${HOME}/OtherTest SRC_LIST)
 
 # set(SRC_LIST ${HOME}/OtherTest/typedef.cpp)
-set(SRC_LIST ${HOME}/OtherTest/rebind.cpp)
+# set(SRC_LIST ${HOME}/OtherTest/rebind.cpp)
+set(SRC_LIST ${HOME}/OtherTest/template_var.cpp)
 
 message(${SRC_LIST})
 # 头文件路径
