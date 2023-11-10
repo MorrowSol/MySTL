@@ -91,9 +91,44 @@ TEST(TestDeque, Expansion) {
 #ifdef MYTESTLOG
     printdeque("pop后dp: ", dq);
 #endif
-    // dq.clear();
-    // EXPECT_EQ(int(dq.size()), 0);
+    dq.clear();
+    EXPECT_EQ(int(dq.size()), 0);
+#ifdef MYTESTLOG
+    printdeque("clear后: ", dq);
+#endif
 }
+
+TEST(TestDeque, Erase) {
+    mySTL::deque<int, mySTL::Allocator<int>, 4> dq;
+    for(int i=0;i<30;i++){
+        dq.push_back(i);
+    }
+#ifdef MYTESTLOG
+    printdeque("原dp: ", dq);
+#endif
+    dq.erase(dq.begin()+10,dq.begin()+20);
+    EXPECT_EQ(int(dq.size()), 20);
+    EXPECT_EQ(*(dq.begin()+10), 20);
+#ifdef MYTESTLOG
+    printdeque("erase后: ", dq);
+#endif
+    dq.erase(dq.begin()+10);
+    dq.erase(dq.begin()+10);
+    dq.erase(dq.begin()+10);
+    EXPECT_EQ(int(dq.size()), 17);
+    EXPECT_EQ(*(dq.begin()+10), 23);
+#ifdef MYTESTLOG
+    printdeque("erase后: ", dq);
+#endif
+}   
+
+
+
+
+
+
+
+
 
 
 }  // namespace testDeque

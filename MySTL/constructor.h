@@ -2,10 +2,8 @@
 #define _CONSTRUCTOR_H_
 
 // #include <new>
-#include <iostream>
 #include <type_traits>
 #include <typeinfo>
-#include <memory>
 
 #include "iterator.h"
 #include "util.h"

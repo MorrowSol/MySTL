@@ -165,9 +165,9 @@ public:
     deque(size_type n) { fill_initialize(n, T()); }
     deque(size_type n, const T& value) { fill_initialize(n, value); }
     ~deque() {
-        // clear();
-        // data_allocator::deallocate(*(start.node));
-        // map_allocator::deallocate(map);
+        clear();
+        data_allocator::deallocate(*(start.node));
+        map_allocator::deallocate(map);
     }
     iterator begin() { return start; }
     iterator end() { return finish; }
@@ -327,7 +327,7 @@ public:
         difference_type n = last - first;
         difference_type elems_before = first - start;
         // 看那边元素少
-        if (elems_before < (size() - n) / 2) {
+        if (elems_before < (difference_type(size()) - n) / 2) {
             std::copy_backward(start, first, last);
             iterator new_start = start + n;
             mySTL::destroy(start, new_start);
