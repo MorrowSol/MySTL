@@ -120,14 +120,14 @@ public:
         --finish;
         mySTL::destroy(finish);
     }
-    void insert(iterator positon, const T& x) { insert(positon, 1, x); }
-    void insert(iterator positon, size_type n, const T& x) {
-        difference_type cur_diff = positon - start;
+    void insert(iterator position, const T& x) { insert(position, 1, x); }
+    void insert(iterator position, size_type n, const T& x) {
+        difference_type cur_diff = position - start;
         if (finish + n <= end_of_storage) {
             // 有空间 拷贝后
-            std::copy(positon, finish, positon + n);
+            std::copy(position, finish, position + n);
             // 构造
-            std::uninitialized_fill_n(positon, n, x);
+            std::uninitialized_fill_n(position, n, x);
             finish += n;
         } else {
             expansion(end(), end(), n);

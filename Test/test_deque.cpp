@@ -1,6 +1,7 @@
 #include <iostream>
 #include "deque.h"
 #include "gtest/gtest.h"
+#include <deque>
 using namespace std;
 
 namespace testDeque {
@@ -63,7 +64,8 @@ TEST(TestDeque, Expansion) {
     dq.printinfo();
     for (int i = 0; i < 10; i++) dq.push_front(i);
     EXPECT_EQ(dq.front(), 9);
-    for (int i = 0; i < 10; i++) dq.push_back(i);
+    for (int i = 0; i < 10; i++) 
+        dq.push_back(i);
     EXPECT_EQ(dq.back(), 9);
     EXPECT_EQ(int(dq.size()), 30);
     dq.printinfo();
@@ -120,10 +122,31 @@ TEST(TestDeque, Erase) {
 #ifdef MYTESTLOG
     printdeque("erase后: ", dq);
 #endif
+    deque<int> dq2;
+    dq2.emplace_back();
 }   
 
-
-
+TEST(TestDeque, Insert) {
+    mySTL::deque<int, mySTL::Allocator<int>, 4> dq;
+    for(int i=0;i<15;i++){
+        dq.push_back(i);
+    }
+#ifdef MYTESTLOG
+    printdeque("原dp: ", dq);
+#endif
+    dq.insert(dq.begin()+10,123);
+    EXPECT_EQ(*(dq.begin()+10), 123);
+    EXPECT_EQ(int(dq.size()), 16);
+#ifdef MYTESTLOG
+    printdeque("插入后: ", dq);
+#endif
+    dq.insert(dq.begin()+13,14,234);
+    EXPECT_EQ(*(dq.begin()+13), 234);
+    EXPECT_EQ(int(dq.size()), 30);
+#ifdef MYTESTLOG
+    printdeque("插入后: ", dq);
+#endif
+}
 
 
 
