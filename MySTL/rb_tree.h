@@ -1,9 +1,10 @@
 #ifndef _RB_TREE_H_
 #define _RB_TREE_H_
 
+#include <vector>
+
 #include "allocator.h"
 #include "iterator.h"
-#include <vector>
 
 namespace mySTL {
 
@@ -14,7 +15,7 @@ const __rb_tree_color_type __rb_tree_black = true;
 template <class T>
 struct __rb_tree_node {
     typedef __rb_tree_color_type color_type;
-    typedef __rb_tree_node<T> *link_type;
+    typedef __rb_tree_node<T>* link_type;
 
     // 每个节点的数据
     color_type color;
@@ -51,11 +52,11 @@ struct __rb_tree_iterator : public iterator<bidirection_iterator_tag, T> {
     // 构造函数
     __rb_tree_iterator() {}
     __rb_tree_iterator(link_type x) : node(x) {}
-    __rb_tree_iterator(const __rb_tree_iterator &it) { node = it.node; }
+    __rb_tree_iterator(const __rb_tree_iterator& it) { node = it.node; }
     // 迭代器操作
     reference operator*() { return node->value; }
     pointer operator->() { return &(operator*()); }
-    self &operator++() {
+    self& operator++() {
         increment();
         return *this;
     }
@@ -64,7 +65,7 @@ struct __rb_tree_iterator : public iterator<bidirection_iterator_tag, T> {
         ++this;
         return tmp;
     }
-    self &operator--() {
+    self& operator--() {
         decrement();
         return *this;
     }
@@ -73,7 +74,7 @@ struct __rb_tree_iterator : public iterator<bidirection_iterator_tag, T> {
         --this;
         return tmp;
     }
-    bool operator==(const self &rhs) const { return node == rhs.node; }
+    bool operator==(const self& rhs) const { return node == rhs.node; }
 
     // 迭代器自增自减
     void increment() {
@@ -122,7 +123,7 @@ template <class Key, class Value, class KeyOfValue, class Compare,
           class Alloc = mySTL::Allocator<__rb_tree_node<Value>>>
 class rb_tree {
 protected:
-    typedef void *void_pointer;
+    typedef void* void_pointer;
     typedef __rb_tree_color_type color_type;
 
 public:
@@ -134,11 +135,11 @@ public:
     typedef typename data_allocator::size_type size_type;
     typedef typename data_allocator::difference_type difference_type;
     typedef __rb_tree_node<Value> node_type;
-    typedef __rb_tree_node<Value> *link_type;
+    typedef __rb_tree_node<Value>* link_type;
     typedef __rb_tree_iterator<Value> iterator;
 
 protected:
-    link_type create_node(const value_type &x) {
+    link_type create_node(const value_type& x) {
         link_type tmp = node_allocator::allocate();
         mySTL::construct(&tmp->value, x);
         return tmp;
@@ -160,23 +161,23 @@ protected:
     link_type header;      // 头节点
     Compare key_compare;   // 比较函数
 
-    link_type &root() { return (link_type &)header->parent; }
-    link_type &leftmost() { return (link_type &)header->left; }
-    link_type &rightmost() { return (link_type &)header->right; }
+    link_type& root() { return (link_type&)header->parent; }
+    link_type& leftmost() { return (link_type&)header->left; }
+    link_type& rightmost() { return (link_type&)header->right; }
 
-    static link_type &left(link_type x, bool symmetry = false) {
-        if (symmetry) return (link_type &)(x->right);
-        return (link_type &)(x->left);
+    static link_type& left(link_type x, bool symmetry = false) {
+        if (symmetry) return (link_type&)(x->right);
+        return (link_type&)(x->left);
     }
-    static link_type &right(link_type x, bool symmetry = false) {
-        if (symmetry) return (link_type &)(x->left);
-        return (link_type &)(x->right);
+    static link_type& right(link_type x, bool symmetry = false) {
+        if (symmetry) return (link_type&)(x->left);
+        return (link_type&)(x->right);
     }
-    static link_type &parent(link_type x) { return (link_type &)(x->parent); }
+    static link_type& parent(link_type x) { return (link_type&)(x->parent); }
     static reference value(link_type x) { return x->value; }
     // 注意这里的key用的仿函数
     static Key key(link_type x) { return KeyOfValue()(value(x)); }
-    static color_type &color(link_type x) { return (color_type &)(x->color); }
+    static color_type& color(link_type x) { return (color_type&)(x->color); }
     static link_type minimum(link_type x) { return node_type::minimum(x); }
     static link_type maximum(link_type x) { return node_type::maximum(x); }
 
@@ -195,13 +196,13 @@ public:
     size_type size() { return node_count; }
 
 public:
-    pair<iterator, bool> insert_unique(const value_type &x);
-    iterator insert_equal(const value_type &x);
-    iterator find(const Key &x);
+    pair<iterator, bool> insert_unique(const value_type& x);
+    iterator insert_equal(const value_type& x);
+    iterator find(const Key& x);
     void clear();
 
 private:
-    iterator __insert(link_type x, link_type y, const value_type &v);
+    iterator __insert(link_type x, link_type y, const value_type& v);
     link_type __copy(link_type x, link_type p);
     void erase(link_type x);
     void init() {
@@ -212,87 +213,48 @@ private:
         rightmost() = header;
     }
     // 重新平衡二叉搜索树
-    inline void __rb_tree_rebalance(link_type x, link_type &root) {
+    inline void __rb_tree_rebalance(link_type x, link_type& root) {
         x->color = __rb_tree_red;  // 将当前节点的颜色设置为红色
         bool symmetry = true;
         // 循环直到当前节点为根节点或者当前节点的父节点颜色为黑色
         while (x != root && x->parent->color == __rb_tree_red) {
             // 如果当前节点的父节点为根节点的左子节点
-            if (x->parent == x->parent->parent->left) 
-                symmetry = false;
-        
-            link_type y = x->parent->parent->right;  // 右子节点
-            if (y && y->color == __rb_tree_red) {    // 右子节点存在且颜色为红色
-                x->parent->color = __rb_tree_black;  // 父节点颜色设为黑色
-                y->color = __rb_tree_black;          // 右子节点颜色设为黑色
+            if (x->parent == x->parent->parent->left) symmetry = false;
+
+            link_type y = x->parent->parent->right;        // 右子节点
+            if (y && y->color == __rb_tree_red) {          // 右子节点存在且颜色为红色
+                x->parent->color = __rb_tree_black;        // 父节点颜色设为黑色
+                y->color = __rb_tree_black;                // 右子节点颜色设为黑色
                 x->parent->parent->color = __rb_tree_red;  // 祖先节点颜色设为红色
                 x = x->parent->parent;                     // 更新当前节点为祖先节点
             } else {
-                if (x == right(x->parent,symmetry)) {         // 当前节点为父节点的右子节点
-                    x = x->parent;                   // 更新当前节点为父节点
-                    __rb_tree_rotate(x, root,symmetry);  // 对父节点进行左旋转
+                if (x == right(x->parent, symmetry)) {    // 当前节点为父节点的右子节点
+                    x = x->parent;                        // 更新当前节点为父节点
+                    __rb_tree_rotate(x, root, symmetry);  // 对父节点进行左旋转
                 }
                 x->parent->color = __rb_tree_black;        // 父节点颜色设为黑色
                 x->parent->parent->color = __rb_tree_red;  // 祖先节点颜色设为红色
-                __rb_tree_rotate(x->parent->parent,
-                                        root,!symmetry);  // 对祖先节点进行右旋转
+                __rb_tree_rotate(x->parent->parent, root, !symmetry);  // 对祖先节点进行右旋转
             }
-            
-            // } else {
-            //     // 如果当前节点的父节点为根节点的右子节点
-            //     link_type y = x->parent->parent->left;   // 左子节点
-            //     if (y && y->color == __rb_tree_red) {    // 左子节点存在且颜色为红色
-            //         x->parent->color = __rb_tree_black;  // 父节点颜色设为黑色
-            //         y->color = __rb_tree_black;          // 左子节点颜色设为黑色
-            //         x->parent->parent->color = __rb_tree_red;  // 祖先节点颜色设为红色
-            //         x = x->parent->parent;                     // 更新当前节点为祖先节点
-            //     } else {
-            //         if (x == x->parent->left) {           // 当前节点为父节点的左子节点
-            //             x = x->parent;                    // 更新当前节点为父节点
-            //             __rb_tree_rotate(x, root,true);  // 对父节点进行右旋转
-            //         }
-            //         x->parent->color = __rb_tree_black;        // 父节点颜色设为黑色
-            //         x->parent->parent->color = __rb_tree_red;  // 祖先节点颜色设为红色
-            //         __rb_tree_rotate(x->parent->parent,
-            //                               root,false);  // 对祖先节点进行左旋转
-            //     }
-            // }
         }
         root->color = __rb_tree_black;  // 根节点颜色设为黑色
     }
-    inline void __rb_tree_rotate(link_type x, link_type &root, bool symmetry = false) {
-        link_type y = right(x,symmetry);
-        right(x,symmetry) = left(x,symmetry);
-        if (left(y,symmetry) != nullptr) {
-            parent(left(y,symmetry)) = x;
+    inline void __rb_tree_rotate(link_type x, link_type& root, bool symmetry = false) {
+        link_type y = right(x, symmetry);
+        right(x, symmetry) = left(x, symmetry);
+        if (left(y, symmetry) != nullptr) {
+            parent(left(y, symmetry)) = x;
         }
         y->parent = x->parent;
         if (x == root)
             root = y;
-        else if (x == left(y->parent,symmetry))
-            left(y->parent,symmetry) = y;
+        else if (x == left(y->parent, symmetry))
+            left(y->parent, symmetry) = y;
         else
-            right(y->parent,symmetry) = y;
-        left(y,symmetry) = x;
+            right(y->parent, symmetry) = y;
+        left(y, symmetry) = x;
         x->parent = y;
     }
-    // inline void __rb_tree_rotate_right(link_type x, link_type &root, bool symmetry = false) {
-    //     if (symmetry) {
-    //         __rb_tree_rotate_left(x, root, false);
-    //     }
-    //     link_type y = x->left;
-    //     x->left = y->right;
-    //     if (y->right != nullptr) parent(y->right) = x;
-    //     y->parent = x->parent;
-    //     if (x == root)
-    //         root = y;
-    //     else if (x == right(y->parent))
-    //         right(y->parent) = y;
-    //     else
-    //         left(y->parent) = y;
-    //     y->right = x;
-    //     x->parent = y;
-    // }
 
 private:
     void inorderTraversal(link_type node, std::vector<value_type>& result) {
@@ -302,8 +264,9 @@ private:
             inorderTraversal(node->right, result);
         }
     }
+
 public:
-    std::vector<value_type> traverseInOrder(){
+    std::vector<value_type> traverseInOrder() {
         std::vector<value_type> result;
         inorderTraversal(header->parent, result);
         return result;
@@ -315,7 +278,7 @@ public:
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__insert(link_type x, link_type y,
-                                                          const value_type &v) {
+                                                          const value_type& v) {
     link_type z = create_node(v);
     // 三种情况 1.第一个节点 2.x不为空 怎么可能 3.比父节点小（假设是less）
     // 插入作为左节点
@@ -341,7 +304,7 @@ rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__insert(link_type x, link_type
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
-rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(const value_type &v) {
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(const value_type& v) {
     link_type y = header;
     link_type x = root();
     while (x != nullptr) {
@@ -353,7 +316,7 @@ rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(const value_type &
 
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
-rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const value_type &v) {
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const value_type& v) {
     link_type y = header;
     link_type x = root();
     bool comp = true;
@@ -378,15 +341,14 @@ rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const value_type 
 }
 template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
-rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key &k) {
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key& k) {
     link_type y = header;
     link_type x = root();
     while (x != nullptr) {
-        if(!key_compare(key(x), k)){
+        if (!key_compare(key(x), k)) {
             y = x;
             x = left(x);
-        }
-        else
+        } else
             x = right(x);
     }
     iterator j = iterator(y);

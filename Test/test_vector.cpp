@@ -284,5 +284,14 @@ TEST(TestVector,Resize){
 #endif
 }
 
+TEST(TestVector,Resize2){
+    mySTL::vector<int> v1;
+    EXPECT_EQ(int(v1.size()),0);
+    EXPECT_EQ(int(v1.capacity()),0);
+    v1.resize(10,1);
+    EXPECT_EQ(int(v1.size()),10);
+    EXPECT_EQ(int(v1.capacity()),10);
+}
+
 
 }  // namespace testVector

@@ -2,6 +2,7 @@
 #define _VECTOR_H_
 
 #include "allocator.h"
+#include "algo.h"
 namespace mySTL {
 
 template <class T, class Alloc = mySTL::Allocator<T> >
@@ -14,6 +15,7 @@ public:
     typedef typename allocator::size_type size_type;
     typedef typename allocator::difference_type difference_type;
     typedef T* iterator;
+    typedef vector<T,Alloc> self;
 
 protected:
     
@@ -142,6 +144,11 @@ public:
         } else {
             insert(finish, new_size - size(), x);
         }
+    }
+    void swap(self& v){
+        mySTL::swap(v.start, start);
+        mySTL::swap(v.finish, finish);
+        mySTL::swap(v.end_of_storage, end_of_storage);
     }
 
 };
